@@ -4,6 +4,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.util.List;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -34,9 +35,16 @@ public class JpaMain {
         EntityTransaction tx2 = em2.getTransaction();
         tx2.begin();
         try {
-            Member findMember = em2.find(Member.class, 1L);
-            System.out.println("findMember.id = " + findMember.getId());
-            System.out.println("findMember.name = " + findMember.getName());
+            //Member findMember = em2.find(Member.class, 1L);
+            List<Member> result = em2.createQuery("select m from Member as m", Member.class) //JPQL -> 엔티티 객체를 대상으로 한 검색 쿼리 작성 가능
+                    //페이지네이션도 가능
+                    .setFirstResult(5) //5번부터
+                    .setMaxResults(8) //8번까지 가져와라
+                    .getResultList(); //전체 조회
+
+            for (Member member : result) {
+                System.out.println("member.name = " + member.getName());
+            }
 
             tx2.commit();
         } catch (Exception e) {
