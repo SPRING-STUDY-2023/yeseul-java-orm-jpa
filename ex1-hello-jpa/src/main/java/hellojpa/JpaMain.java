@@ -61,6 +61,21 @@ public class JpaMain {
             em3.close();
         }
 
+        //* 회원 수정
+        EntityManager em4 = emf.createEntityManager();
+        EntityTransaction tx4 = em4.getTransaction();
+        tx4.begin();
+        try {
+            Member findMember = em4.find(Member.class, 2L);
+            findMember.setName("HelloJPA");
+
+            tx4.commit();
+        } catch (Exception e) {
+            tx4.rollback();
+        } finally {
+            em4.close();
+        }
+
         emf.close();
     }
 }
