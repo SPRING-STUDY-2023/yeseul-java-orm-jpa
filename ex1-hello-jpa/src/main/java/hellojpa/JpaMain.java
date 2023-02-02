@@ -29,6 +29,22 @@ public class JpaMain {
             em.close();
         }
 
+        //* 회원 조회
+        EntityManager em2 = emf.createEntityManager(); //트랜잭션 단위로 생성 해줘야함.
+        EntityTransaction tx2 = em2.getTransaction(); //jpa는 트랜잭션 단위 안에서 DB 접근해야함.
+        tx2.begin();
+        try {
+            Member findMember = em2.find(Member.class, 1L);
+            System.out.println("findMember.id = " + findMember.getId());
+            System.out.println("findMember.name = " + findMember.getName());
+
+            tx2.commit();
+        } catch (Exception e) {
+            tx2.rollback();
+        } finally {
+            em2.close();
+        }
+
         emf.close();
     }
 }
