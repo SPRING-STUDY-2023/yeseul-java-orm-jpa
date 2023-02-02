@@ -14,6 +14,7 @@ public class JpaMain {
         EntityTransaction tx = em.getTransaction(); //jpa는 트랜잭션 단위 안에서 DB 접근해야함.
         tx.begin();
 
+        //* 회원 생성
         try {
             Member member = new Member();
             member.setId(1L);
