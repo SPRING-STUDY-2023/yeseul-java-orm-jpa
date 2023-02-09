@@ -17,7 +17,10 @@ public class JpaMain {
 
         //* 회원 생성
         try {
+            Member member1 = new Member();
+            member1.setUsername("C");
 
+            em.persist(member1);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
