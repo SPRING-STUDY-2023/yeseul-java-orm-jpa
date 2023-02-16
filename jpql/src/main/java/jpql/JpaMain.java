@@ -31,6 +31,11 @@ public class JpaMain {
 
             System.out.println("singleResult = " + singleResult.getUsername());
 
+            //* 임베디드 타입 프로젝션
+            em.createQuery("select o.addresses from Order o", Address.class).getResultList();
+            //* 스칼라 타입 프로젝션
+            em.createQuery("select new jpql.MemberDTO(m.userName, m.age) from Member m", MemberDTO.class).getResultList();
+
 
 
 
