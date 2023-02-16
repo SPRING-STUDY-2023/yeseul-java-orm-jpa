@@ -5,6 +5,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import java.util.List;
+import java.util.Set;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -18,23 +19,36 @@ public class JpaMain {
         //* 회원 생성
         try {
 
-            Address address = new Address("city", "street", "zipcode");
-
             Member member = new Member();
             member.setUsername("member1");
-            member.setHomeAddress(address);
-            member.setPeriod(new Period());
-            em.persist(member );
+            member.setHomeAddress(new Address("homecity", "street", "10000"));
 
-            Member member2 = new Member();
-            member2.setUsername("member2");
-            member2.setHomeAddress(member.getHomeAddress());
-            em.persist(member2);
+            //컬렉션
+            member.getFavoriteFoods().add("치킨");
+            member.getFavoriteFoods().add("족발");
+            member.getFavoriteFoods().add("피자");
 
-            //이러면 이제 member2의 주소도 같이 바뀌는 문제가 생김 -> 불변 객체로 만들면 수정 안됨. (setter를 아예 없애던지, private로 만들거나)
-            //member.getHomeAddress().setCity("newCity");
+            member.getAddressHistory().add(new Address("old1", "street", "10000"));
+            member.getAddressHistory().add(new Address("old2", "street", "10000"));
 
-            //그렇다면 실제로 값을 바꾸고 싶다면? -> 그냥 임베디드 객체 자체를 새로 만드세요 ^^,,
+            em.persist(member); //값타입 컬렉션을 따로 persist 하지 않아도 자동으로 DB 저장\
+
+            em.flush();
+            em.clear();
+
+            System.out.println("============");
+            Member findMember = em.find(Member.class, member.getId());
+
+            List<Address> addressHistory = findMember.getAddressHistory();
+            for (Address address : addressHistory) {
+                System.out.println("address = " + address.getCity());
+            }
+
+            Set<String> favoriteFoods = findMember.getFavoriteFoods();
+            for (String favoriteFood : favoriteFoods) {
+                System.out.println("favorite fodd = " + favoriteFood);
+            }
+            System.out.println("============");
 
             tx.commit();
         } catch (Exception e) {

@@ -2,7 +2,7 @@ package hellojpa;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.*;
 
 @Entity //중요! 애노테이션 붙여야 jpa 인식 가능
 public class Member {
@@ -13,17 +13,43 @@ public class Member {
     @Column(name = "USERNAME") //객체는 username, DB의 컬럼명은 name
     private String username;
 
-    //Period
-    @Embedded
-    private Period period;
+    public Set<String> getFavoriteFoods() {
+        return favoriteFoods;
+    }
+
+    public void setFavoriteFoods(Set<String> favoriteFoods) {
+        this.favoriteFoods = favoriteFoods;
+    }
+
+    public List<Address> getAddressHistory() {
+        return addressHistory;
+    }
+
+    public void setAddressHistory(List<Address> addressHistory) {
+        this.addressHistory = addressHistory;
+    }
+
+    public Address getWorkAddress() {
+        return workAddress;
+    }
+
+    public void setWorkAddress(Address workAddress) {
+        this.workAddress = workAddress;
+    }
 
     //Address
     @Embedded
     private Address homeAddress;
 
-    //Address
-//    @Embedded
-//    private Address wordAddress; // 에러 !!!
+    //값 타입 컬렉션
+    @ElementCollection //컬렉션을 가지려면 다음과 같은 어노테이션으로 매핑해야함
+    @CollectionTable(name = "FAVORITE_FOOD", joinColumns = @JoinColumn(name = "MEMBER_ID"))
+    @Column(name = "FOOD_NAME")
+    private Set<String> favoriteFoods = new HashSet<>();
+
+    @ElementCollection
+    @CollectionTable(name = "ADDRESS", joinColumns = @JoinColumn(name = "MEMBER_ID"))
+    private List<Address> addressHistory = new ArrayList<>();
 
     @Embedded
     @AttributeOverrides({
@@ -46,14 +72,6 @@ public class Member {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public Period getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(Period period) {
-        this.period = period;
     }
 
     public Address getHomeAddress() {
