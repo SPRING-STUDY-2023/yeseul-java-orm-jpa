@@ -1,6 +1,7 @@
 package jpql;
 
 import javax.persistence.*;
+import java.util.List;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -32,14 +33,32 @@ public class JpaMain {
             System.out.println("singleResult = " + singleResult.getUsername());
 
             //* 임베디드 타입 프로젝션
-            em.createQuery("select o.addresses from Order o", Address.class).getResultList();
+            //em.createQuery("select o.addresses from Order o", Address.class).getResultList();
             //* 스칼라 타입 프로젝션
-            em.createQuery("select new jpql.MemberDTO(m.userName, m.age) from Member m", MemberDTO.class).getResultList();
+            //em.createQuery("select new jpql.MemberDTO(m.userName, m.age) from Member m", MemberDTO.class).getResultList();
 
+            //* 페이징
+            for (int i = 0; i < 100; i++) {
+                Member member2 = new Member();
+                member2.setUsername("member" + i);
+                member2.setAge(i);
+                em.persist(member2);
+            }
 
+            em.flush();
+            em.clear();
 
+            List<Member> results = em.createQuery("select m from Member m order by m.age desc", Member.class)
+                    .setFirstResult(6)
+                    .setMaxResults(10)
+                    .getResultList();
+            System.out.println("result size = " + results.size());
 
+            for (Member m : results) {
+                System.out.println("member = " + m.getUsername());
+            }
 
+            //*
 
             tx.commit();
         } catch (Exception e) {
