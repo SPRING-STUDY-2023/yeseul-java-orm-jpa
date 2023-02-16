@@ -1,29 +1,37 @@
 package hellojpa;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity //중요! 애노테이션 붙여야 jpa 인식 가능
-//@Table(name = "USER") -> 실제 클래스명과 테이블명이 다를때 매핑해주면 가능
+@SequenceGenerator(
+        name = "MEMBER_SEQ_GENERATOR",
+        sequenceName = "MEMBER_SEQ", //매핑할 데이터베이스 시퀀스 이름
+        initialValue = 1, allocationSize = 1)
 public class Member {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MEMBER_SEQ_GENERATOR")
     private Long id;
-    //@Column(name = "userName") -> 컬럼명이 다를때도 마찬가지로 어노테이션을 이용해서 매핑 가능
-    private String name;
+    @Column(name = "name") //객체는 username, DB의 컬럼명은 name
+    private String username;
+
+    public Member() {
+
+    }
 
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
-    public void setName(String name) {
-        this.name = name;
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

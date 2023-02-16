@@ -1,26 +1,29 @@
-package hellojpa;
+package jpabook.jpashop;
+
+import jpabook.jpashop.domain.Book;
+import jpabook.jpashop.domain.Order;
+import jpabook.jpashop.domain.OrderItem;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import java.util.List;
 
 public class JpaMain {
     public static void main(String[] args) {
-       EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");//EntityManagerFactory -> 애플리케이션 로딩 시점에 딱 한번만 선언
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");//EntityManagerFactory -> 애플리케이션 로딩 시점에 딱 한번만 선언
 
         EntityManager em = emf.createEntityManager(); //트랜잭션 단위로 생성 해줘야함.
 
         EntityTransaction tx = em.getTransaction(); //jpa는 트랜잭션 단위 안에서 DB 접근해야함.
         tx.begin();
 
-        //* 회원 생성
         try {
-            Member member1 = new Member();
-            member1.setUsername("C");
+            Book book = new Book();
+            book.setName("JPA");
+            book.setAuthor("김영한");
 
-            em.persist(member1);
+            em.persist(book);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
@@ -31,3 +34,4 @@ public class JpaMain {
         emf.close();
     }
 }
+
