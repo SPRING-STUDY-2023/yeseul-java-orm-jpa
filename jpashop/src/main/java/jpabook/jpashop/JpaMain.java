@@ -11,7 +11,7 @@ import javax.persistence.Persistence;
 
 public class JpaMain {
     public static void main(String[] args) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");//EntityManagerFactory -> 애플리케이션 로딩 시점에 딱 한번만 선언
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("mapping");//EntityManagerFactory -> 애플리케이션 로딩 시점에 딱 한번만 선언
 
         EntityManager em = emf.createEntityManager(); //트랜잭션 단위로 생성 해줘야함.
 
