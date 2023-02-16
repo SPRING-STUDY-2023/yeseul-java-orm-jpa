@@ -38,27 +38,45 @@ public class JpaMain {
             //em.createQuery("select new jpql.MemberDTO(m.userName, m.age) from Member m", MemberDTO.class).getResultList();
 
             //* 페이징
-            for (int i = 0; i < 100; i++) {
-                Member member2 = new Member();
-                member2.setUsername("member" + i);
-                member2.setAge(i);
-                em.persist(member2);
-            }
+//            for (int i = 0; i < 100; i++) {
+//                Member member2 = new Member();
+//                member2.setUsername("member" + i);
+//                member2.setAge(i);
+//                em.persist(member2);
+//            }
 
-            em.flush();
-            em.clear();
+//            em.flush();
+//            em.clear();
 
-            List<Member> results = em.createQuery("select m from Member m order by m.age desc", Member.class)
-                    .setFirstResult(6)
-                    .setMaxResults(10)
-                    .getResultList();
-            System.out.println("result size = " + results.size());
+//            List<Member> results = em.createQuery("select m from Member m order by m.age desc", Member.class)
+//                    .setFirstResult(6)
+//                    .setMaxResults(10)
+//                    .getResultList();
+//            System.out.println("result size = " + results.size());
+//
+//            for (Member m : results) {
+//                System.out.println("member = " + m.getUsername());
+//            }
 
-            for (Member m : results) {
-                System.out.println("member = " + m.getUsername());
-            }
+            //* 조인
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
 
-            //*
+            Member member_join = new Member();
+            member_join.setUsername("member_join");
+            member_join.setAge(10);
+            member_join.setTeam(team);
+
+            em.persist(member_join);
+
+            String join_query = "select m from Member m inner join m.team t"; //내부 조인
+            //List<Member> result = em.createQuery(join_query, Member.class).getResultList();
+
+            //* 서브 쿼리
+            String sub_query = "select (select avg(m.age) from Member m) as avgAge from Member m join Teem t on m.userName = t.name";
+            List<Member> result = em.createQuery(sub_query, Member.class).getResultList();
+
 
             tx.commit();
         } catch (Exception e) {
