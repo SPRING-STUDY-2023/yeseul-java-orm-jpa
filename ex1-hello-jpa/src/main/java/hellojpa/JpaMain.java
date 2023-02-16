@@ -17,10 +17,14 @@ public class JpaMain {
 
         //* 회원 생성
         try {
-            Member member1 = new Member();
-            member1.setUsername("C");
 
-            em.persist(member1);
+            Member member = new Member();
+            member.setUsername("hello");
+            member.setHomeAddress(new Address("city", "street", "zipcode"));
+            member.setPeriod(new Period());
+
+            em.persist(member );
+
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
