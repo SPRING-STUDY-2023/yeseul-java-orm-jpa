@@ -18,12 +18,23 @@ public class JpaMain {
         //* 회원 생성
         try {
 
-            Member member = new Member();
-            member.setUsername("hello");
-            member.setHomeAddress(new Address("city", "street", "zipcode"));
-            member.setPeriod(new Period());
+            Address address = new Address("city", "street", "zipcode");
 
+            Member member = new Member();
+            member.setUsername("member1");
+            member.setHomeAddress(address);
+            member.setPeriod(new Period());
             em.persist(member );
+
+            Member member2 = new Member();
+            member2.setUsername("member2");
+            member2.setHomeAddress(member.getHomeAddress());
+            em.persist(member2);
+
+            //이러면 이제 member2의 주소도 같이 바뀌는 문제가 생김 -> 불변 객체로 만들면 수정 안됨. (setter를 아예 없애던지, private로 만들거나)
+            //member.getHomeAddress().setCity("newCity");
+
+            //그렇다면 실제로 값을 바꾸고 싶다면? -> 그냥 임베디드 객체 자체를 새로 만드세요 ^^,,
 
             tx.commit();
         } catch (Exception e) {
