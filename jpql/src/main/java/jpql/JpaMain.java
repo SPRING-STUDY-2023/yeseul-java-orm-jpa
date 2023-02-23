@@ -13,10 +13,30 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Member member = new Member();
-            member.setUsername("member1");
-            member.setAge(10);
-            em.persist(member);
+            Team teamA = new Team();
+            teamA.setName("TeamA");
+            em.persist(teamA);
+
+            Team teamB = new Team();
+            teamB.setName("TeamB");
+            em.persist(teamB);
+
+            Member member1 = new Member();
+            member1.setUsername("member1");
+            member1.setAge(10);
+            member1.setType(MemberType.ADMIN);
+            member1.setTeam(teamA);
+            em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setUsername("member2");
+            member2.setAge(15);
+            member2.setType(MemberType.USER);
+            member2.setTeam(teamB);
+            em.persist(member2);
+
+            em.flush();
+            em.clear();
 
             //* TypeQuery, Query
             TypedQuery<Member> query1 = em.createQuery("SELECT m FROM Member m where m.age > 18", Member.class); //반환 타입이 명확할 때
@@ -44,10 +64,10 @@ public class JpaMain {
 //                member2.setAge(i);
 //                em.persist(member2);
 //            }
-
+//
 //            em.flush();
 //            em.clear();
-
+//
 //            List<Member> results = em.createQuery("select m from Member m order by m.age desc", Member.class)
 //                    .setFirstResult(6)
 //                    .setMaxResults(10)
@@ -59,27 +79,65 @@ public class JpaMain {
 //            }
 
             //* 조인
-            Team team = new Team();
-            team.setName("teamA");
-            em.persist(team);
+//            Team team = new Team();
+//            team.setName("teamA");
+//            em.persist(team);
 
-            Member member_join = new Member();
-            member_join.setUsername("member_join");
-            member_join.setAge(10);
-            member_join.setTeam(team);
+//            Member member_join = new Member();
+//            member_join.setUsername("member_join");
+//            member_join.setAge(10);
+//            member_join.setTeam(team);
+//
+//            em.persist(member_join);
+//
+//            String join_query = "select m from Member m inner join m.team t"; //내부 조인
+//            //List<Member> result = em.createQuery(join_query, Member.class).getResultList();
+//
+//            //* 서브 쿼리
+//            String sub_query = "select (select avg(m.age) from Member m) as avgAge from Member m join Teem t on m.userName = t.name";
+//            List<Member> result = em.createQuery(sub_query, Member.class).getResultList();
 
-            em.persist(member_join);
+            //* JPQL 타입 표현
+            String query = "SELECT m.username, 'HELLO', TRUE FROM Member m" +
+//                    "where m.type = ADMIN"; 이렇게 바로 쓸수는 없음 -> 패키지명 포함해야됨
+//                    "WHERE m.type = jpql.MemberType.ADMIN";
+                    " where m.type = :userType";
 
-            String join_query = "select m from Member m inner join m.team t"; //내부 조인
-            //List<Member> result = em.createQuery(join_query, Member.class).getResultList();
+            List<Object[]> result2 = em.createQuery(query)
+                    .setParameter("userType", MemberType.ADMIN)
+                    .getResultList(); //문자, Boolean 가능
 
-            //* 서브 쿼리
-            String sub_query = "select (select avg(m.age) from Member m) as avgAge from Member m join Teem t on m.userName = t.name";
-            List<Member> result = em.createQuery(sub_query, Member.class).getResultList();
+            for (Object[] objects : result2) {
+                System.out.println("objects = " + objects[0]);
+                System.out.println("objects = " + objects[1]);
+                System.out.println("objects = " + objects[2]);
+            }
+
+            //엔티티 타입은 상속관계에서 사용
+//          Book book = new Book();
+//          book.setName("JPA");
+//          book.setAuthor("김영한");
+//
+//          em.persist(book);
+
+//          em.createQuery("select i from Item i where type(i) = Book", Item.class)
+//            .getResultList(); // Discriminator Value값이 Book인 것
+
+            //* 조건식
+//          String query = "select "
+//              + "case when m.age <= 10 then '학생요금' "
+//              + "   when m.age >= 60 then '경로요금' "
+//              + "   else '일반요금' "
+//              + "end " + "from Member m";
+
+//          String query = "select coalesce(m.username, '이름없는 회원') as userName "
+//              + "from Member m ";
+//          List<String> result = em.createQuery(query, String.class).getResultList();
 
 
             tx.commit();
         } catch (Exception e) {
+            System.out.println("exception");
             tx.rollback();
         } finally {
             em.close();
