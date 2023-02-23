@@ -15,21 +15,21 @@ public class Order extends BaseEntity {
 
 //    @Column(name = "MEMBER_ID")
 //    private Long memberId;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
     //양방향
-    @OneToMany(mappedBy = "order")
-    private List<OrderItem> orderItems = new ArrayList<>();
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderItem> orderItems = new ArrayList<>(); //order를 생성할 때 orderItem도 같이 넣기. 하나만 persist 해주면 됨
 
     private LocalDateTime orderDate;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "DELIVERY_ID")
-    private Delivery delivery;
+    private Delivery delivery; //order을 생성해서 delivery를 넣을때 자동으로 생성
 
     public Member getMember() {
         return member;
