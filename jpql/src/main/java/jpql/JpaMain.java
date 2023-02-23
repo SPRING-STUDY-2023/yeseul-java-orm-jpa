@@ -1,6 +1,7 @@
 package jpql;
 
 import javax.persistence.*;
+import java.sql.SQLOutput;
 import java.util.List;
 
 public class JpaMain {
@@ -98,20 +99,20 @@ public class JpaMain {
 //            List<Member> result = em.createQuery(sub_query, Member.class).getResultList();
 
             //* JPQL 타입 표현
-            String query = "SELECT m.username, 'HELLO', TRUE FROM Member m" +
-//                    "where m.type = ADMIN"; 이렇게 바로 쓸수는 없음 -> 패키지명 포함해야됨
-//                    "WHERE m.type = jpql.MemberType.ADMIN";
-                    " where m.type = :userType";
-
-            List<Object[]> result2 = em.createQuery(query)
-                    .setParameter("userType", MemberType.ADMIN)
-                    .getResultList(); //문자, Boolean 가능
-
-            for (Object[] objects : result2) {
-                System.out.println("objects = " + objects[0]);
-                System.out.println("objects = " + objects[1]);
-                System.out.println("objects = " + objects[2]);
-            }
+//            String query = "SELECT m.username, 'HELLO', TRUE FROM Member m" +
+////                    "where m.type = ADMIN"; 이렇게 바로 쓸수는 없음 -> 패키지명 포함해야됨
+////                    "WHERE m.type = jpql.MemberType.ADMIN";
+//                    " where m.type = :userType";
+//
+//            List<Object[]> result2 = em.createQuery(query)
+//                    .setParameter("userType", MemberType.ADMIN)
+//                    .getResultList(); //문자, Boolean 가능
+//
+//            for (Object[] objects : result2) {
+//                System.out.println("objects = " + objects[0]);
+//                System.out.println("objects = " + objects[1]);
+//                System.out.println("objects = " + objects[2]);
+//            }
 
             //엔티티 타입은 상속관계에서 사용
 //          Book book = new Book();
@@ -134,6 +135,63 @@ public class JpaMain {
 //              + "from Member m ";
 //          List<String> result = em.createQuery(query, String.class).getResultList();
 
+            //* 경로표현식
+//          String query = "select t.members.size From Team t"; //size는 가능
+//          Integer result = em.createQuery(query, Integer.class)
+//                  .getSingleResult();
+//          System.out.println("size = " + result);
+
+
+//          //묵시적 join - 잘 사용하지 않음
+//          String query1 = "select m.team From Member m";
+//          List<Team> result1 = em.createQuery(query1, Team.class)
+//              .getResultList();
+
+//          for (Team s : result) {
+//            System.out.println("S = ", s);
+//        }
+
+            //명시적 조인
+//          String query2 = "select m.age From Team t join t.members m";
+//          List<Collection>  result2 = em.createQuery(query2, Collection.class)
+//              .getResultList();
+
+            //* FETCH 조인 -> 실무에서 엄청 많이 씀
+//          String query = "select m From Member m join fetch m.team";
+//          List<Member> result = em.createQuery(query, Member.class).getResultList();
+//
+//          for(Teem teem : result) {
+//              System.out.println("Teem = " + teem.getName() + "| members= " + teem.getMembers().size());
+//                  for(Member member: teem.getMembers()){
+//                      System.out.println("-> member = " + member);
+//              }
+//          }
+
+            //* 엔티티 직접 사용
+//          String query = "select m From Member m where m =: member";
+//          Member findMember = em.createQuery(query, Member.class)
+//                  .setParameter("member", member1)
+//                  .getSingleResult();
+//          System.out.println("findMember = " + findMember);
+
+            //* Named 쿼리
+//          List<Member> resultList = em.createNamedQuery("Member.findByUsername")
+//                  .setParameter("username", "member1")
+//                  .getResultList();
+//
+//          for(Member m : resultList) {
+//               System.out.println("member : " + m);
+//          }
+
+            //* 벌크 연산
+            //FLUSH 자동 호출
+            int resultCount = em.createQuery("update Member m set m.age = 20")
+                    .executeUpdate();
+
+            em.clear();
+
+            Member findMember = em.find(Member.class, member1.getId());
+            System.out.println("findMember = " + findMember.getAge());
 
             tx.commit();
         } catch (Exception e) {
